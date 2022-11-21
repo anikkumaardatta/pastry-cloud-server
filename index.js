@@ -20,11 +20,21 @@ const client = new MongoClient(uri, {
   useUnifiedTopology: true,
   serverApi: ServerApiVersion.v1,
 });
-client.connect((err) => {
-  const collection = client.db("test").collection("devices");
-  // perform actions on the collection object
-  client.close();
-});
+
+const run = async () => {
+  try {
+    const pastryCollections = client.db("pastryCloud").collection("pastries");
+
+    app.get("/pastries", async (req, res) => {
+      const query = {};
+      const cursor = pastryCollections.find(query);
+      const pastries = await cursor.toArray();
+      res.send(pastries);
+    });
+  } finally {
+  }
+};
+run().catch((error) => console.error(error));
 
 app.get("/", (req, res) => {
   res.send(`Pastry Cloud server running on ${port}`);
