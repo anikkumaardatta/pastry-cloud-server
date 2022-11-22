@@ -2,7 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const app = express();
 const port = process.env.PORT || 5000;
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 require("dotenv").config();
 
 // middleware
@@ -24,12 +24,34 @@ const client = new MongoClient(uri, {
 const run = async () => {
   try {
     const pastryCollections = client.db("pastryCloud").collection("pastries");
+    const reviewCollections = client.db("pastryCloud").collection("reviews");
 
     app.get("/pastries", async (req, res) => {
       const query = {};
       const cursor = pastryCollections.find(query);
       const pastries = await cursor.toArray();
       res.send(pastries);
+    });
+    app.get("/pastries/:limit", async (req, res) => {
+      const limit = req.params.limit;
+      const query = {};
+      const cursor = pastryCollections.find(query);
+      const pastries = await cursor.limit(parseInt(limit)).toArray();
+      res.send(pastries);
+    });
+
+    app.get("/pastry/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const pastry = await pastryCollections.findOne(query);
+      res.send(pastry);
+    });
+
+    // reviews api
+    app.post("/reviews", async (req, res) => {
+      const review = req.body;
+      const result = await reviewCollections.insertOne(review);
+      res.send(result);
     });
   } finally {
   }
