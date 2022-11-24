@@ -48,9 +48,42 @@ const run = async () => {
     });
 
     // reviews api
+    app.get("/reviews", async (req, res) => {
+      const email = req.query.email;
+      let query = {};
+      if (email) {
+        query = {
+          reviewerEmail: email,
+        };
+      }
+      const cursor = reviewCollections.find(query);
+      const reviews = await cursor.toArray();
+      res.send(reviews);
+    });
+
+    app.get("/reviews/:pastryId", async (req, res) => {
+      const pastryId = req.params.pastryId;
+      const query = { pastryId: pastryId };
+      const cursor = reviewCollections.find(query);
+      const reviews = await cursor.toArray();
+      res.send(reviews);
+    });
+
     app.post("/reviews", async (req, res) => {
       const review = req.body;
-      const result = await reviewCollections.insertOne(review);
+      const reviews = await reviewCollections.insertOne(review);
+      res.send(reviews);
+    });
+    app.post("/pastries", async (req, res) => {
+      const pastry = req.body;
+      const pastries = await pastryCollections.insertOne(pastry);
+      res.send(pastries);
+    });
+
+    app.delete("/reviews/:id", async (req, res) => {
+      const reviewId = req.params.id;
+      const query = { _id: ObjectId(reviewId) };
+      const result = await reviewCollections.deleteOne(query);
       res.send(result);
     });
   } finally {
