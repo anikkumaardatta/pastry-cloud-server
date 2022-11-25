@@ -25,6 +25,7 @@ const run = async () => {
   try {
     const pastryCollections = client.db("pastryCloud").collection("pastries");
     const reviewCollections = client.db("pastryCloud").collection("reviews");
+    const blogCollections = client.db("pastryCloud").collection("blogs");
 
     app.get("/pastries", async (req, res) => {
       const query = {};
@@ -68,7 +69,12 @@ const run = async () => {
       const reviews = await cursor.toArray();
       res.send(reviews);
     });
-
+    app.get("/blogs", async (req, res) => {
+      const query = {};
+      const cursor = blogCollections.find(query);
+      const blogs = await cursor.toArray();
+      res.send(blogs);
+    });
     app.post("/reviews", async (req, res) => {
       const review = req.body;
       const reviews = await reviewCollections.insertOne(review);
