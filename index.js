@@ -85,6 +85,13 @@ const run = async () => {
       const pastries = await pastryCollections.insertOne(pastry);
       res.send(pastries);
     });
+
+    app.delete("/reviews/:id", async (req, res) => {
+      const reviewId = req.params.id;
+      const query = { _id: ObjectId(reviewId) };
+      const result = await reviewCollections.deleteOne(query);
+      res.send(result);
+    });
   } finally {
   }
 };
