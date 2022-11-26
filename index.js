@@ -11,7 +11,6 @@ app.use(express.json());
 
 // Mongo DB
 
-// const user = ;
 console.log(process.env.DB_USER);
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.elpkqgt.mongodb.net/?retryWrites=true&w=majority`;
@@ -33,6 +32,7 @@ const run = async () => {
       const pastries = await cursor.toArray();
       res.send(pastries);
     });
+
     app.get("/pastries/:limit", async (req, res) => {
       const limit = req.params.limit;
       const query = {};
@@ -46,6 +46,13 @@ const run = async () => {
       const query = { _id: ObjectId(id) };
       const pastry = await pastryCollections.findOne(query);
       res.send(pastry);
+    });
+
+    app.get("/blogs", async (req, res) => {
+      const query = {};
+      const cursor = blogCollections.find(query);
+      const blogs = await cursor.toArray();
+      res.send(blogs);
     });
 
     // reviews api
@@ -69,17 +76,13 @@ const run = async () => {
       const reviews = await cursor.toArray();
       res.send(reviews);
     });
-    app.get("/blogs", async (req, res) => {
-      const query = {};
-      const cursor = blogCollections.find(query);
-      const blogs = await cursor.toArray();
-      res.send(blogs);
-    });
+
     app.post("/reviews", async (req, res) => {
       const review = req.body;
       const reviews = await reviewCollections.insertOne(review);
       res.send(reviews);
     });
+
     app.post("/pastries", async (req, res) => {
       const pastry = req.body;
       const pastries = await pastryCollections.insertOne(pastry);
